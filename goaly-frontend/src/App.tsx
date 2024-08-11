@@ -9,7 +9,7 @@ const App: React.FC = () => {
     <Router>
       <UserProvider>
         <CssBaseline />
-        <AppRoutes /> {/* Use the AppRoutes component */}
+        <AppRoutes />
       </UserProvider>
     </Router>
   );
