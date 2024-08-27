@@ -1,34 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Patch,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { GoalService } from './goal.service';
-import { CreateGoalDto } from './dto/create-goal.dto';
-import { UpdateGoalDto } from './dto/update-goal.dto';
+import { JwtAuthGuard } from '../user/jwt-auth.guard';
+import { Goal } from './entities/goal.entity';
 
 @Controller('goal')
 export class GoalController {
   constructor(private readonly goalService: GoalService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createGoalDto: CreateGoalDto) {
-    return this.goalService.create(createGoalDto);
+  async createGoal(
+    @Request() req,
+    @Body()
+    body: { target_amount: number; target_date: Date; current_amount?: number },
+  ) {
+    const userId = req.user.id;
+    return this.goalService.createGoal(
+      userId,
+      body.target_amount,
+      body.target_date,
+      body.current_amount,
+    );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.goalService.findAll();
+  async findAllGoals(@Request() req) {
+    const userId = req.user.id;
+    return this.goalService.findAllGoals(userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.goalService.findOne(+id);
-  }
-
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGoalDto: UpdateGoalDto) {
-    return this.goalService.update(+id, updateGoalDto);
+  async updateGoal(@Param('id') id: number, @Body() updateData: Partial<Goal>) {
+    return this.goalService.updateGoal(id, updateData);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.goalService.remove(+id);
+  async deleteGoal(@Param('id') id: number) {
+    return this.goalService.deleteGoal(id);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('trend-data')
+  async getTrendData(@Request() req) {
+    const trendData = await this.goalService.getTrendData(req.user.id);
+    return trendData;
   }
 }

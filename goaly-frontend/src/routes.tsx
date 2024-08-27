@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
+import NewDashboardPage from "./pages/NewDashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const AppRoutes: React.FC = () => {
@@ -14,7 +15,7 @@ const AppRoutes: React.FC = () => {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <NewDashboardPage />
           </ProtectedRoute>
         }
       />

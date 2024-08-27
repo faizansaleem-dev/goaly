@@ -31,14 +31,11 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(
+    username: string,
+    password: string,
+  ): Promise<Partial<User>> {
     const user = await this.findOneByUsername(username);
-    console.log(password, '<<<<<<PASSWORD');
-    console.log(user, '<<<<USER');
-    console.log(
-      await bcrypt.compare(password, user.password_hash),
-      '<<<<<<COMPARISON',
-    );
 
     if (user && bcrypt.compareSync(password, user.password_hash)) {
       const { password_hash, ...result } = user;
@@ -47,8 +44,8 @@ export class UserService {
     return null;
   }
 
-  async login(user: any) {
-    const payload: JwtPayload = { username: user.username };
+  async login(user: Partial<User>) {
+    const payload: JwtPayload = { username: user.username, id: user.id };
     return {
       access_token: this.jwtService.sign(payload),
     };
